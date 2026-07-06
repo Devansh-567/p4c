@@ -3,7 +3,6 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 import os
-import shlex
 import signal
 import subprocess
 import sys
@@ -149,19 +148,18 @@ class BackendDriver:
         # Preserve comments: -C
         # Unix and std C keywords should be allowed in P4 (-undef and -nostdinc)
         # Allow using ' for constants rather than delimiters for strings (-x assembler-with-cpp)
-        self.add_command_option("preprocessor", "-C -undef -nostdinc -x assembler-with-cpp")
+        for flag in ("-C", "-undef", "-nostdinc", "-x", "assembler-with-cpp"):
+            self.add_command_option("preprocessor", flag)
 
         # default search path
         if opts.language == "p4-16":
-            self.add_command_option(
-                "preprocessor", "-I {}".format(os.environ["P4C_16_INCLUDE_PATH"])
-            )
-            self.add_command_option("compiler", "-I {}".format(os.environ["P4C_16_INCLUDE_PATH"]))
+            include_path = os.environ["P4C_16_INCLUDE_PATH"]
         else:
-            self.add_command_option(
-                "preprocessor", "-I {}".format(os.environ["P4C_14_INCLUDE_PATH"])
-            )
-            self.add_command_option("compiler", "-I {}".format(os.environ["P4C_14_INCLUDE_PATH"]))
+            include_path = os.environ["P4C_14_INCLUDE_PATH"]
+        self.add_command_option("preprocessor", "-I")
+        self.add_command_option("preprocessor", include_path)
+        self.add_command_option("compiler", "-I")
+        self.add_command_option("compiler", include_path)
 
         # append search path
         for path in opts.search_path:
@@ -183,13 +181,14 @@ class BackendDriver:
                 "are deprecated, consider using '--p4runtime-files'",
                 file=sys.stderr,
             )
-            self.add_command_option("compiler", "--p4runtime-file {}".format(opts.p4runtime_file))
-            self.add_command_option(
-                "compiler", "--p4runtime-format {}".format(opts.p4runtime_format)
-            )
+            self.add_command_option("compiler", "--p4runtime-file")
+            self.add_command_option("compiler", opts.p4runtime_file)
+            self.add_command_option("compiler", "--p4runtime-format")
+            self.add_command_option("compiler", opts.p4runtime_format)
 
         if opts.p4runtime_files:
-            self.add_command_option("compiler", "--p4runtime-files {}".format(opts.p4runtime_files))
+            self.add_command_option("compiler", "--p4runtime-files")
+            self.add_command_option("compiler", opts.p4runtime_files)
 
         # disable annotations
         if opts.disabled_annos is not None:
@@ -206,17 +205,22 @@ class BackendDriver:
             for option in opts.log_levels:
                 self.add_command_option("compiler", "-T{}".format(option))
             if opts.passes:
-                self.add_command_option("compiler", "--top4 {}".format(",".join(opts.passes)))
+                self.add_command_option("compiler", "--top4")
+                self.add_command_option("compiler", ",".join(opts.passes))
             if opts.debug:
                 self.add_command_option("compiler", "-vvv")
             if opts.dump_dir:
-                self.add_command_option("compiler", "--dump {}".format(opts.dump_dir))
+                self.add_command_option("compiler", "--dump")
+                self.add_command_option("compiler", opts.dump_dir)
             if opts.json:
-                self.add_command_option("compiler", "--toJSON {}".format(opts.json))
+                self.add_command_option("compiler", "--toJSON")
+                self.add_command_option("compiler", opts.json)
             if opts.json_source:
-                self.add_command_option("compiler", "--fromJSON {}".format(opts.json_source))
+                self.add_command_option("compiler", "--fromJSON")
+                self.add_command_option("compiler", opts.json_source)
             if opts.pretty_print:
-                self.add_command_option("compiler", "--pp {}".format(opts.pretty_print))
+                self.add_command_option("compiler", "--pp")
+                self.add_command_option("compiler", opts.pretty_print)
             if opts.ndebug_mode:
                 self.add_command_option("compiler", "--ndebug")
             # Make sure we don't have conflicting debugger options.
@@ -293,7 +297,13 @@ class BackendDriver:
             print("{}:\n{}".format(step, " ".join(cmd)))
             return 0
 
-        args = shlex.split(" ".join(cmd))
+        # `cmd` is already a properly tokenized list of arguments (each
+        # element is a single argv entry). Do NOT join it into a string and
+        # re-split it with shlex: shlex.split() treats whitespace as a
+        # token separator, so any argument that legitimately contains a
+        # space (e.g. a path like "/Users/jane doe/include") would be
+        # incorrectly broken into multiple arguments.
+        args = cmd
         try:
             p = subprocess.Popen(args)
         except:
