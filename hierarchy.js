@@ -876,8 +876,7 @@ var hierarchy =
     ] ],
     [ "option_t", "structoption__t.html", null ],
     [ "P4::AbstractParserDriver", "class_p4_1_1_abstract_parser_driver.html", [
-      [ "P4::P4ParserDriver", "class_p4_1_1_p4_parser_driver.html", null ],
-      [ "P4::V1::V1ParserDriver", "class_p4_1_1_v1_1_1_v1_parser_driver.html", null ]
+      [ "P4::P4ParserDriver", "class_p4_1_1_p4_parser_driver.html", null ]
     ] ],
     [ "P4::ActionInvocation", "class_p4_1_1_action_invocation.html", null ],
     [ "P4::ActionReplacement", "class_p4_1_1_action_replacement.html", null ],
@@ -3537,6 +3536,7 @@ var hierarchy =
         [ "P4::DoEliminateSerEnums", "class_p4_1_1_do_eliminate_ser_enums.html", null ],
         [ "P4::DoEliminateSwitch", "class_p4_1_1_do_eliminate_switch.html", null ],
         [ "P4::DoExpandEmit", "class_p4_1_1_do_expand_emit.html", null ],
+        [ "P4::DoExpandHeaderUnionStackPushPop", "class_p4_1_1_do_expand_header_union_stack_push_pop.html", null ],
         [ "P4::DoExpandLookahead", "class_p4_1_1_do_expand_lookahead.html", null ],
         [ "P4::DoFlattenHeaderUnion", "class_p4_1_1_do_flatten_header_union.html", [
           [ "P4::DoFlattenHeaderUnionStack", "class_p4_1_1_do_flatten_header_union_stack.html", null ]
