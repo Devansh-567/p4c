@@ -13,7 +13,7 @@ using namespace P4::literals;
 
 namespace {
 
-// Parses a single option through CompilerOptions and returns the active error reporter.
+// Process a single option argument and return the active ErrorReporter instance.
 ErrorReporter &processOption(const char *option) {
     auto &options = GTestContext::get().options();
     const char *argv[] = {"test", option};
@@ -21,6 +21,7 @@ ErrorReporter &processOption(const char *option) {
     return GTestContext::get().errorReporter();
 }
 
+// Retrieve the diagnostic action for a specific option name.
 DiagnosticAction actionFor(ErrorReporter &reporter, cstring name) {
     return reporter.getDiagnosticAction(ErrorType::WARN_INVALID, name, DiagnosticAction::Warn);
 }
