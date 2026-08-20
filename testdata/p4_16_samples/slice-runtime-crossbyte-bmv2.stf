@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 The P4 Language Consortium & Devansh Singh
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# Verify slice [16:9] extraction from dst_addr (0x015600 >> 9 & 0xFF = 0xAB).
+# Expect h.a to update to 0xAB while the rest of the packet passes through.
+packet 0 00 00 00 01 56 00 00 00 00 00 00 00 00 00 00
+expect 0 00 00 00 01 56 00 00 00 00 00 00 00 00 ab
