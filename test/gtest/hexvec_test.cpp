@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 2026 The P4 Language Consortium & Devansh Singh
 // SPDX-License-Identifier: Apache-2.0
 
-#include "lib/hex.h"
-
 #include <gtest/gtest.h>
-
 #include <sstream>
 #include <vector>
+
+#include "lib/hex.h"
 
 namespace P4::Test {
 
