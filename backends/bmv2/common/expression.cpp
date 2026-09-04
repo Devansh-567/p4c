@@ -725,7 +725,7 @@ void ExpressionConverter::postorder(const IR::Slice *expression) {
     BUG_CHECK(bitwidth == h - l + 1, "%1%: unexpected slice width", expression);
     auto le = get(expr);
     if (!le) return;
-    // Shift non-zero slices down to bit 0 so the result is right-aligned 
+    // Shift non-zero slices down to bit 0 so the result is right-aligned
     // to the target width before masking off upper bits.
     if (l != 0) {
         auto shifted = new Util::JsonObject();
