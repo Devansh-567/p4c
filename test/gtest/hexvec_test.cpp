@@ -35,4 +35,3 @@ TEST(HexVec, MultipleElements) {
 }
 
 }  // namespace P4::Test
-

@@ -74,8 +74,7 @@ class TCOptions : public CompilerOptions {
                 long value = strtol(arg, &end, 10);
                 if (*end != 0 || value <= 0) {
                     ::P4::error(ErrorType::ERR_INVALID,
-                                "--num-timer-profiles expects a positive integer, got '%1%'",
-                                arg);
+                                "--num-timer-profiles expects a positive integer, got '%1%'", arg);
                     return false;
                 }
                 timerProfiles = static_cast<unsigned>(value);
