@@ -35,8 +35,12 @@ class HasTableApply : public Inspector, public ResolutionContext {
         if (!mi->isApply()) return;
         auto am = mi->to<P4::ApplyMethod>();
         if (!am->object->is<IR::P4Table>()) return;
-        BUG_CHECK(table == nullptr, "%1% and %2%: multiple table applications in one expression",
-                  table, am->object);
+        if (table != nullptr) {
+            ::P4::error(ErrorType::ERR_UNSUPPORTED,
+                        "%1% and %2%: multiple table applications in one expression", table,
+                        am->object);
+            return;
+        }
         table = am->object->to<IR::P4Table>();
         call = expression;
         LOG3("Invoked table is " << dbp(table));
