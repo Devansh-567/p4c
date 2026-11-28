@@ -509,7 +509,11 @@ class ParserSymbolicInterpreter {
                 }
             }
             std::stringstream errorStr;
-            errorStr << errorValue;
+            if (auto err = errorValue->to<SymbolicError>()) {
+                errorStr << err->message();
+            } else {
+                errorStr << errorValue;
+            }
             ::P4::warning(ErrorType::WARN_IGNORE_PROPERTY, "Result of '%1%' is not defined: %2%",
                           sord, errorStr.str());
         }
