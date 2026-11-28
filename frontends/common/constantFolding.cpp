@@ -106,7 +106,15 @@ const IR::Node *DoConstantFolding::postorder(IR::PathExpression *e) {
                 return e;
         }
         LOG4("cfold path " << e->path << " -> " << cst);
-        return CloneConstants::clone(cst, this);
+        const IR::Expression *result = CloneConstants::clone(cst, this);
+        if (typesKnown) {
+            auto pathType = typeMap->getType(e, true);
+            auto cstType = typeMap->getType(cst, true);
+            if (pathType != nullptr && cstType != nullptr && !pathType->equiv(cstType)) {
+                result = new IR::Cast(e->srcInfo, pathType->clone(), result, /* implicit */ true);
+            }
+        }
+        return result;
     }
     return e;
 }
