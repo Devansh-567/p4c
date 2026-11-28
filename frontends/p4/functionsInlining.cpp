@@ -26,10 +26,9 @@ void DiscoverFunctionsInlining::postorder(const IR::MethodCallExpression *mce) {
     auto stat = findContext<IR::Statement>();
     CHECK_NULL(stat);
 
-    BUG_CHECK(
-        bool(RTTI::isAny<IR::MethodCallStatement, IR::BaseAssignmentStatement, IR::IfStatement>(
-            stat)),
-        "%1%: unexpected statement with call", stat);
+    if (!RTTI::isAny<IR::MethodCallStatement, IR::BaseAssignmentStatement, IR::IfStatement>(stat)) {
+        return;
+    }
 
     if (const auto *ifStat = stat->to<IR::IfStatement>()) {
         // Check that we're inside condition of IfStatement
@@ -176,7 +175,7 @@ const IR::Node *FunctionsInliner::preorder(IR::BaseAssignmentStatement *statemen
 
     auto [callee, callExpr] = get(*replMap, orig);
     if (callee == nullptr) return statement;
-    BUG_CHECK(callExpr != nullptr, "%1%: expected a method call", statement->right);
+    if (callExpr == nullptr) return statement;
     return inlineBefore(callee, callExpr, statement);
 }
 
@@ -188,7 +187,7 @@ const IR::Node *FunctionsInliner::preorder(IR::IfStatement *statement) {
 
     auto [callee, callExpr] = get(*replMap, orig);
     if (callee == nullptr) return statement;
-    BUG_CHECK(callExpr != nullptr, "%1%: expected a method call", statement->condition);
+    if (callExpr == nullptr) return statement;
     return inlineBefore(callee, callExpr, statement);
 }
 
@@ -354,8 +353,7 @@ const IR::Statement *FunctionsInliner::inlineBefore(const IR::Node *calleeNode,
         auto [it, inserted] = pendingReplacements.emplace(mce, retExpr);
         BUG_CHECK(inserted, "%1%: duplicate value for pending replacements", it->first);
     } else {
-        BUG_CHECK(statement->is<IR::MethodCallStatement>(), "%1%: expected a method call",
-                  statement);
+        if (!statement->is<IR::MethodCallStatement>()) return statement;
         // ignore the returned value.
     }
 
